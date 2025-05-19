@@ -38,6 +38,9 @@ The solution is organized into multiple projects, each with a specific responsib
 - Contains unit tests for business logic and other components
 - Ensures robustness and correctness of the application logic
 
+### 6. ** Change the Connection String in appSettings.json as per the local SQL Server DB**
+
+### 7. ** Find the DBQuery in the master branch **
 ---
 
 ## 🚀 Getting Started
