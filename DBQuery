@@ -1,0 +1,269 @@
+Create database BokingSystem
+
+USE [BookingSystem]
+GO
+/****** Object:  UserDefinedTableType [dbo].[Inventory_UDTT]    Script Date: 5/19/2025 10:25:05 PM ******/
+CREATE TYPE [dbo].[Inventory_UDTT] AS TABLE(
+	[Id] [int] NULL,
+	[Title] [nvarchar](15) NULL,
+	[Description] [nvarchar](max) NULL,
+	[Remaining_count] [int] NULL,
+	[Expiration_date] [datetime] NULL
+)
+GO
+/****** Object:  UserDefinedTableType [dbo].[Member_UDTT]    Script Date: 5/19/2025 10:25:05 PM ******/
+CREATE TYPE [dbo].[Member_UDTT] AS TABLE(
+	[Id] [int] NULL,
+	[Name] [nvarchar](15) NULL,
+	[Surname] [nvarchar](max) NULL,
+	[BookingCount] [int] NULL,
+	[DateJoined] [datetime] NULL
+)
+GO
+/****** Object:  Table [dbo].[tbl_InvertoryDetails]    Script Date: 5/19/2025 10:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tbl_InvertoryDetails](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Title] [nvarchar](15) NULL,
+	[Description] [nvarchar](max) NULL,
+	[Remaining_Count] [int] NULL,
+	[Expiration_Date] [datetime] NULL,
+ CONSTRAINT [PK_tbl_InvertoryDetails] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tbl_MemberDetails]    Script Date: 5/19/2025 10:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tbl_MemberDetails](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[Surname] [nvarchar](50) NULL,
+	[BookingCount] [int] NULL,
+	[DateJoined] [datetime] NULL,
+ CONSTRAINT [PK_tbl_MemberDetails] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GetInventory_ById]    Script Date: 5/19/2025 10:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Get the inventory details based on Id
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_GetInventory_ById]
+	-- Add the parameters for the stored procedure here
+	@InventoryItemId INT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	SELECT Id
+		,Title
+		,Description
+		,Remaining_Count as 'RemainingCount'
+		,Expiration_Date as 'Expiration_Date'
+	FROM tbl_InvertoryDetails
+	WHERE Id = @InventoryItemId
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GetMember_ById]    Script Date: 5/19/2025 10:25:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Get the member details based on Id
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_GetMember_ById]
+	-- Add the parameters for the stored procedure here
+	@MemberId INT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	SELECT Id
+		,Name
+		,Surname
+		,BookingCount
+		,DateJoined
+	FROM [dbo].[tbl_MemberDetails]
+	WHERE Id = @MemberId
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SP_UpdateInventoryInfo_ById]    Script Date: 5/19/2025 10:25:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Update the inventory item details based on Id
+-- =============================================
+-- SP_UpdateInventoryInfo_ById 5,2
+CREATE PROCEDURE [dbo].[SP_UpdateInventoryInfo_ById]
+	-- Add the parameters for the stored procedure here
+	@InventoryItemId int,
+	@RemainingCount int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+
+    -- Insert statements for procedure here
+	SET NOCOUNT OFF;
+
+    UPDATE tbl_InvertoryDetails
+    SET Remaining_Count = @RemainingCount
+    WHERE Id = @InventoryItemId;
+
+    RETURN @@ROWCOUNT;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SP_UpdateMemberBookingInfo_ById]    Script Date: 5/19/2025 10:25:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Update the member booking count details based on Id	
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_UpdateMemberBookingInfo_ById]
+	-- Add the parameters for the stored procedure here
+	@MemberId int,
+	@BookingCount int,
+	@DateJoined datetime
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT OFF;
+
+    -- Insert statements for procedure here
+	Update [dbo].[tbl_MemberDetails] set BookingCount=@BookingCount, DateJoined=@DateJoined where Id=@MemberId
+	RETURN @@ROWCOUNT;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SP_UpsertInventoryDetails]    Script Date: 5/19/2025 10:25:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Insert/Update the Inventory Details using Tabletype Variable
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_UpsertInventoryDetails]
+	-- Add the parameters for the stored procedure here
+	@InventoryDetails Inventory_UDTT READONLY
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	MERGE INTO [dbo].[tbl_InvertoryDetails] AS Target
+	USING @InventoryDetails AS Source
+		ON Target.Title = Source.Title -- Match on Title
+			AND Target.Description = Source.[Description] -- Match on Description
+	WHEN MATCHED
+		THEN
+			UPDATE
+			SET Title = Source.Title
+				,Description = Source.Description
+				,Remaining_Count = Source.Remaining_Count
+				,Expiration_Date = Source.Expiration_Date
+	WHEN NOT MATCHED
+		THEN
+			INSERT (
+				Title
+				,Description
+				,Remaining_Count
+				,Expiration_Date
+				)
+			VALUES (
+				Source.Title
+				,Source.[Description]
+				,Source.Remaining_Count
+				,Source.Expiration_Date
+				);
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SP_UpsertMemberDetails]    Script Date: 5/19/2025 10:25:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
+-- Author:		Aman Julka
+-- Create date: 19 May 2025
+-- Description:	Insert/Update the Member Details using Tabletype Variable
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_UpsertMemberDetails]
+	-- Add the parameters for the stored procedure here
+	@MemberDetails Member_UDTT READONLY
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	MERGE INTO [dbo].[tbl_MemberDetails] AS Target
+	USING @MemberDetails AS Source
+		ON Target.Name = Source.[Name] -- Match on Name
+			AND Target.Surname = Source.Surname -- Match on Surname
+	WHEN MATCHED
+		THEN
+			UPDATE
+			SET Name = Source.[Name]
+				,Surname = Source.Surname
+				,BookingCount = Source.BookingCount
+				,DateJoined = Source.DateJoined
+	WHEN NOT MATCHED
+		THEN
+			INSERT (
+				Name
+				,Surname
+				,BookingCount
+				,DateJoined
+				)
+			VALUES (
+				Source.[Name]
+				,Source.Surname
+				,Source.BookingCount
+				,Source.DateJoined
+				);
+END
+GO
